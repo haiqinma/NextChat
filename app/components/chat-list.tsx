@@ -19,7 +19,7 @@ import { useRef, useEffect } from "react";
 import { showConfirm } from "./ui-lib";
 import { useMobileScreen } from "../utils";
 import clsx from "clsx";
-import { notifyError } from "../plugins/show_window";
+import { useAuth } from "../hooks/useAuth";
 
 export function ChatItem(props: {
   onClick?: () => void;
@@ -35,17 +35,12 @@ export function ChatItem(props: {
 }) {
   const draggableRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (localStorage.getItem("hasConnectedWallet") === "false") {
-      notifyError("❌未检测到钱包，请先安装并连接钱包");
-      return;
-    }
     if (props.selected && draggableRef.current) {
       draggableRef.current?.scrollIntoView({
         block: "center",
       });
     }
   }, [props.selected]);
-
   const { pathname: currentPath } = useLocation();
   return (
     <Draggable draggableId={`${props.id}`} index={props.index}>
@@ -120,10 +115,13 @@ export function ChatList(props: { narrow?: boolean }) {
   const chatStore = useChatStore();
   const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
-  if (localStorage.getItem("hasConnectedWallet") === "false") {
-    notifyError("❌未检测到钱包，请先安装并连接钱包");
+
+  // 权限认证
+  const isAuthenticated = useAuth();
+  if (!isAuthenticated) {
     return;
   }
+
   const onDragEnd: OnDragEndResponder = (result) => {
     const { destination, source } = result;
     if (!destination) {

@@ -1,3 +1,4 @@
+import { jwtVerify } from "jose";
 import { notifyError, notifySuccess } from "./show_window";
 
 // 等待钱包注入
@@ -227,5 +228,19 @@ export async function loginWithChallenge() {
   } catch (error) {
     console.error("❌登录失败:", error);
     notifyError(`❌登录失败: ${error}`);
+  }
+}
+
+export async function isValidToken(token: string): Promise<boolean> {
+  try {
+    const secret = new TextEncoder().encode(
+      process.env.JWT_SECRET ||
+        "e802e988a02546cc47415e4bc76346aae7ceece97a0f950319c861a5de38b20d",
+    );
+    await jwtVerify(token, secret);
+    return true;
+  } catch (error) {
+    console.warn("JWT 验证失败:", error);
+    return false;
   }
 }
