@@ -1,7 +1,7 @@
 import { Analytics } from "@vercel/analytics/react";
 import { Home } from "./components/home";
 import { getServerSideConfig } from "./config/server";
-
+import { Toaster } from "sonner";
 const serverConfig = getServerSideConfig();
 
 export default async function App() {
@@ -11,6 +11,7 @@ export default async function App() {
       {serverConfig?.isVercel && (
         <>
           <Analytics />
+          <Toaster position="top-right" richColors /> {/* 👈 必须在这里 */}
         </>
       )}
     </>

@@ -10,7 +10,7 @@ export function createWebDavClient(store: SyncStore) {
   const config = store.webdav;
   const proxyUrl =
     store.useProxy && store.proxyUrl.length > 0 ? store.proxyUrl : undefined;
-
+  console.log(`proxyUrl=${proxyUrl}`);
   return {
     async check() {
       try {

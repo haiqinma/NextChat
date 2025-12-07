@@ -7,7 +7,7 @@ import type { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { getServerSideConfig } from "./config/server";
-
+import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: "NextChat",
   description: "Your personal ChatGPT Chat Bot.",
@@ -51,6 +51,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <Toaster position="top-right" richColors />
         {serverConfig?.isVercel && (
           <>
             <SpeedInsights />

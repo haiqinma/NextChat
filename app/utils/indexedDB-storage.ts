@@ -8,6 +8,7 @@ class IndexedDBStorage implements StateStorage {
   public async getItem(name: string): Promise<string | null> {
     try {
       const value = (await get(name)) || localStorage.getItem(name);
+      console.log(`indexDB get value = ${value}`);
       return value;
     } catch (error) {
       return localStorage.getItem(name);

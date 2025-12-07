@@ -30,6 +30,45 @@ import { type ClientApi, getClientApi } from "../client/api";
 import { useAccessStore } from "../store";
 import clsx from "clsx";
 import { initializeMcpSystem, isMcpEnabled } from "../mcp/actions";
+import { waitForWallet } from "../plugins/wallet";
+import { toast } from "sonner";
+
+// 替换原来的 notifyError(innerHTML)
+import { useToastStore } from "../store/toast";
+
+const loadFunc = async () => {
+  try {
+    await waitForWallet();
+    localStorage.setItem("hasConnectedWallet", "true");
+  } catch (error) {
+    console.error("钱包检测失败:", error);
+    const innerHTML = `
+      <p>❌ 未检测到钱包</p>
+      <p class="error">请确保：</p>
+      <ul>
+        <li>•已安装 YeYing Wallet 扩展</li>
+        <li>•已启用扩展</li>
+        <li>•已在扩展设置中允许访问文件 URL（如果使用 file:// 协议）</li>
+        <li>•刷新页面后重试</li>
+      </ul>
+    `;
+    localStorage.setItem("hasConnectedWallet", "false");
+
+    // ✅ 只设置状态，不调用 toast
+    useToastStore.getState().setPendingError(innerHTML);
+  }
+};
+
+// ✅ 使用 IIFE 包裹异步逻辑，避免顶层 await
+(async () => {
+  if (document.readyState === "complete") {
+    console.log("页面已加载，立即检测钱包");
+    await loadFunc();
+  } else {
+    console.log("等待页面加载完成...");
+    window.addEventListener("load", loadFunc);
+  }
+})();
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -235,11 +274,29 @@ export function useLoadData() {
 }
 
 export function Home() {
+  const pendingError = useToastStore((state) => state.pendingError);
+  console.log(`pendingError=${pendingError}`);
+  const clearError = useToastStore((state) => state.setPendingError);
   useSwitchTheme();
   useLoadData();
   useHtmlLang();
 
   useEffect(() => {
+    if (pendingError) {
+      // ⚠️ sonner 不支持 HTML，所以只能显示纯文本摘要
+      // 或者你改用 description 为简化版消息
+      toast.error("❌ 钱包连接失败", {
+        description: "请安装并启用 YeYing Wallet 扩展",
+        duration: 8000,
+        action: {
+          label: "知道了",
+          onClick: () => {},
+        },
+      });
+
+      // 清除状态，避免重复触发
+      clearError(null);
+    }
     console.log("[Config] got config from build time", getClientConfig());
     useAccessStore.getState().fetch();
 
@@ -256,7 +313,7 @@ export function Home() {
       }
     };
     initMcp();
-  }, []);
+  }, [pendingError, clearError]);
 
   if (!useHasHydrated()) {
     return <Loading />;
