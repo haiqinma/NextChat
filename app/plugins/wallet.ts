@@ -27,7 +27,7 @@ export async function waitForWallet() {
 }
 
 // 连接钱包
-export async function connectWallet(router: any, route: any) {
+export async function connectWallet() {
   if (localStorage.getItem("hasConnectedWallet") === "false") {
     notifyError("❌未检测到钱包，请先安装并连接钱包");
     return;
@@ -45,7 +45,6 @@ export async function connectWallet(router: any, route: any) {
         localStorage.setItem("currentAccount", currentAccount);
         notifySuccess(`✅钱包连接成功！\n账户: ${currentAccount}`);
         await loginWithChallenge();
-        await router.push(route.fullPath);
       } else {
         notifyError("❌未获取到账户");
       }
@@ -169,7 +168,7 @@ export async function loginWithChallenge() {
         address: currentAccount,
       },
     };
-    const response = await fetch("/api/v1/auth/challenge", {
+    const response = await fetch("/api/yeying/api/v1/auth/challenge", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -206,7 +205,7 @@ export async function loginWithChallenge() {
         signature: signature,
       },
     };
-    const verifyRes = await fetch("/api/v1/auth/verify", {
+    const verifyRes = await fetch("/api/yeying/api/v1/auth/verify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

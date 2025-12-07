@@ -9,6 +9,7 @@ import Locale from "../locales";
 import styles from "./message-selector.module.scss";
 import { getMessageTextContent } from "../utils";
 import clsx from "clsx";
+import { notifyError } from "../plugins/show_window";
 
 function useShiftRange() {
   const [startIndex, setStartIndex] = useState<number>();
@@ -132,6 +133,10 @@ export function MessageSelector(props: {
 
   useEffect(() => {
     if (startIndex === undefined || endIndex === undefined) {
+      return;
+    }
+    if (localStorage.getItem("hasConnectedWallet") === "false") {
+      notifyError("❌未检测到钱包，请先安装并连接钱包");
       return;
     }
     const [start, end] = [startIndex, endIndex].sort((a, b) => a - b);

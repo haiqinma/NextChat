@@ -290,7 +290,9 @@ export function Home() {
         duration: 8000,
         action: {
           label: "知道了",
-          onClick: () => {},
+          onClick: () => {
+            waitForWallet();
+          },
         },
       });
 

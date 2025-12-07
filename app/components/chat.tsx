@@ -34,6 +34,7 @@ import ConfirmIcon from "../icons/confirm.svg";
 import CloseIcon from "../icons/close.svg";
 import CancelIcon from "../icons/cancel.svg";
 import ImageIcon from "../icons/image.svg";
+import WalletIcon from "../icons/wallet.svg";
 
 import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
@@ -125,6 +126,7 @@ import { getModelProvider } from "../utils/model";
 import { RealtimeChat } from "@/app/components/realtime-chat";
 import clsx from "clsx";
 import { getAvailableClientsCount, isMcpEnabled } from "../mcp/actions";
+import { connectWallet } from "../plugins/wallet";
 
 const localStorage = safeLocalStorage();
 
@@ -1753,6 +1755,8 @@ function _Chat() {
                   title={Locale.Chat.Actions.FullScreen}
                   aria={Locale.Chat.Actions.FullScreen}
                   onClick={() => {
+                    console.log(`xxxxxxxxxxxx`);
+                    console.log(`xxxxxxxxxxxx`);
                     config.update(
                       (config) => (config.tightBorder = !config.tightBorder),
                     );
@@ -1760,6 +1764,19 @@ function _Chat() {
                 />
               </div>
             )}
+            {
+              <div className="window-action-button">
+                <IconButton
+                  icon={<WalletIcon />}
+                  bordered
+                  title=""
+                  aria=""
+                  onClick={async () => {
+                    await connectWallet();
+                  }}
+                />
+              </div>
+            }
           </div>
 
           <PromptToast

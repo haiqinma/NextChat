@@ -38,6 +38,7 @@ import { collectModelsWithDefaultModel } from "../utils/model";
 import { createEmptyMask, Mask } from "./mask";
 import { executeMcpAction, getAllTools, isMcpEnabled } from "../mcp/actions";
 import { extractMcpJson, isMcpJson } from "../mcp/utils";
+import { notifyError } from "../plugins/show_window";
 
 const localStorage = safeLocalStorage();
 
@@ -409,6 +410,10 @@ export const useChatStore = createPersistStore(
         attachImages?: string[],
         isMcpResponse?: boolean,
       ) {
+        if (localStorage.getItem("hasConnectedWallet") === "false") {
+          notifyError("❌未检测到钱包，请先安装并连接钱包");
+          return;
+        }
         const session = get().currentSession();
         const modelConfig = session.mask.modelConfig;
 

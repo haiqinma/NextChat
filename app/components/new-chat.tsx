@@ -17,6 +17,7 @@ import { useCommand } from "../command";
 import { showConfirm } from "./ui-lib";
 import { BUILTIN_MASK_STORE } from "../masks";
 import clsx from "clsx";
+import { notifyError } from "../plugins/show_window";
 
 function MaskItem(props: { mask: Mask; onClick?: () => void }) {
   return (
@@ -98,6 +99,10 @@ export function NewChat() {
   useCommand({
     mask: (id) => {
       try {
+        if (localStorage.getItem("hasConnectedWallet") === "false") {
+          notifyError("❌未检测到钱包，请先安装并连接钱包");
+          return;
+        }
         const mask = maskStore.get(id) ?? BUILTIN_MASK_STORE.get(id);
         startChat(mask ?? undefined);
       } catch {
@@ -107,12 +112,19 @@ export function NewChat() {
   });
 
   useEffect(() => {
+    if (localStorage.getItem("hasConnectedWallet") === "false") {
+      notifyError("❌未检测到钱包，请先安装并连接钱包");
+      return;
+    }
     if (maskRef.current) {
       maskRef.current.scrollLeft =
         (maskRef.current.scrollWidth - maskRef.current.clientWidth) / 2;
     }
   }, [groups]);
-
+  if (localStorage.getItem("hasConnectedWallet") === "false") {
+    notifyError("❌未检测到钱包，请先安装并连接钱包");
+    return;
+  }
   return (
     <div className={styles["new-chat"]}>
       <div className={styles["mask-header"]}>
