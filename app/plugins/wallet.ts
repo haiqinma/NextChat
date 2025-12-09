@@ -1,5 +1,6 @@
 import { jwtVerify } from "jose";
 import { notifyError, notifySuccess } from "./show_window";
+import { authChallenge, authVerify } from "./auth";
 
 // 等待钱包注入
 export async function waitForWallet() {
@@ -159,34 +160,7 @@ export async function loginWithChallenge() {
     return;
   }
   try {
-    // 1. 从后端获取 Challenge
-    const header = {
-      did: "xxxx",
-    };
-    const body = {
-      header: header,
-      body: {
-        address: currentAccount,
-      },
-    };
-    const response = await fetch("/api/yeying/api/v1/auth/challenge", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        accept: "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `❌Failed to create post: ${
-          response.status
-        } error: ${await response.text()}`,
-      );
-    }
-    const r = await response.json();
-    const challenge = r.body.result;
+    const challenge = await authChallenge(currentAccount);
     if (typeof window.ethereum === "undefined") {
       return;
     }
@@ -196,32 +170,12 @@ export async function loginWithChallenge() {
       params: [challenge, currentAccount],
     });
     // 3. 发送签名到后端验证
-    const header2 = {
-      did: "xxxx",
-    };
-    const body2 = {
-      header: header2,
-      body: {
-        address: currentAccount,
-        signature: signature,
-      },
-    };
-    const verifyRes = await fetch("/api/yeying/api/v1/auth/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        accept: "application/json",
-      },
-      body: JSON.stringify(body2),
-    });
-    if (!verifyRes.ok) {
-      throw new Error("❌验证失败");
+    const token = await authVerify(currentAccount, signature);
+    if (!(await isValidToken(token))) {
+      throw new Error(`❌验证失败, ${token}`);
     }
-    const r2 = await verifyRes.json();
-    const token = r2.body.token;
     // 4. 保存 Token
     localStorage.setItem("authToken", token);
-
     // const avatar = await getAvatar(currentAccount)
     // console.log(`avatar=${avatar}`)
     notifySuccess(`✅登录成功`);

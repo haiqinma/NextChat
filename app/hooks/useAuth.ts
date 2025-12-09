@@ -4,10 +4,7 @@ import { isValidToken } from "../plugins/wallet";
 import { notifyError } from "../plugins/show_window";
 
 export function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState<
-    string | boolean | null
-  >(null);
-
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   useEffect(() => {
     const check = async () => {
       if (localStorage.getItem("hasConnectedWallet") === "false") {

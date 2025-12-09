@@ -38,7 +38,7 @@ import { collectModelsWithDefaultModel } from "../utils/model";
 import { createEmptyMask, Mask } from "./mask";
 import { executeMcpAction, getAllTools, isMcpEnabled } from "../mcp/actions";
 import { extractMcpJson, isMcpJson } from "../mcp/utils";
-import { notifyError } from "../plugins/show_window";
+import { useAuth } from "../hooks/useAuth";
 
 const localStorage = safeLocalStorage();
 
@@ -409,9 +409,10 @@ export const useChatStore = createPersistStore(
         content: string,
         attachImages?: string[],
         isMcpResponse?: boolean,
+        isAuthenticated: boolean = true,
       ) {
-        if (localStorage.getItem("hasConnectedWallet") === "false") {
-          notifyError("❌未检测到钱包，请先安装并连接钱包");
+        // 权限认证
+        if (!isAuthenticated) {
           return;
         }
         const session = get().currentSession();
@@ -846,10 +847,12 @@ export const useChatStore = createPersistStore(
                     typeof result === "object"
                       ? JSON.stringify(result)
                       : String(result);
+                  const isAuthenticated = useAuth();
                   get().onUserInput(
                     `\`\`\`json:mcp-response:${mcpRequest.clientId}\n${mcpResponse}\n\`\`\``,
                     [],
                     true,
+                    isAuthenticated,
                   );
                 })
                 .catch((error) => showToast("MCP execution failed", error));
