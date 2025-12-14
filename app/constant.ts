@@ -45,6 +45,7 @@ export enum Path {
   Home = "/",
   Chat = "/chat",
   Settings = "/settings",
+  Centers = "/my-center",
   NewChat = "/new-chat",
   Masks = "/masks",
   Plugins = "/plugins",
@@ -505,7 +506,7 @@ export const VISION_MODEL_REGEXES = [
   /o3/,
   /o4-mini/,
   /grok-4/i,
-  /gpt-5/
+  /gpt-5/,
 ];
 
 export const EXCLUDE_VISION_MODEL_REGEXES = [/claude-3-5-haiku-20241022/];
@@ -734,18 +735,23 @@ const ai302Models = [
 ];
 
 let seq = 1000; // 内置的模型序号生成器从1000开始
-export const DEFAULT_MODELS = routerModels.map(({ name, displayName }) => ({
-  name,
-  displayName,
-  available: true,
-  sorted: seq++, // Global sequence sort(index)
-  provider: {
-    id: "openai",
-    providerName: "OpenAI",
-    providerType: "openai",
-    sorted: 1, // 固定顺序，保持与之前的排序逻辑一致
-  },
-})) as const;
+const _models = routerModels.map(
+  ({ name, displayName }, idx) =>
+    ({
+      name,
+      displayName,
+      available: true,
+      sorted: idx,
+      provider: {
+        id: "openai",
+        providerName: "OpenAI",
+        providerType: "openai",
+        sorted: 1,
+      },
+    }) as const,
+);
+
+export const DEFAULT_MODELS = _models;
 
 export const CHAT_PAGE_SIZE = 15;
 export const MAX_RENDER_MSG_COUNT = 45;

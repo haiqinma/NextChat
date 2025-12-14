@@ -159,6 +159,9 @@ const en: LocaleType = {
     DeleteToast: "Chat Deleted",
     Revert: "Revert",
   },
+  OWNER_CENTER: {
+    MyPage: "person center",
+  },
   Settings: {
     Title: "Settings",
     SubTitle: "All Settings",
