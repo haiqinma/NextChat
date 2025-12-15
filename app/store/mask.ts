@@ -91,7 +91,14 @@ export const useMaskStore = createPersistStore(
       );
       const config = useAppConfig.getState();
       if (config.hideBuiltinMasks) return userMasks;
-      const buildinMasks = BUILTIN_MASKS.map(
+      // 根据当前环境设置的语言过滤出对应的面具模版
+      // BUILTIN_MASKS.filter()
+      // const DEFAULT_LANG = "en"; 默认语言是英文，可以在设置里修改语言
+      const lang = getLang();
+      // lang=cn
+      console.log(`lang=${lang}`);
+      const currentMasks = BUILTIN_MASKS.filter((item) => item.lang === lang);
+      const buildinMasks = currentMasks.map(
         (m) =>
           ({
             ...m,
