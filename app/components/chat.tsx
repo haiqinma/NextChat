@@ -535,29 +535,43 @@ export function ChatActions(props: {
   const models = useMemo(() => {
     console.log(
       "[ModelSelector] allModels",
-      allModels.map((m) => ({
-        name: m.name,
-        displayName: m.displayName,
-        available: m.available,
-        provider: m.provider?.providerName,
-      })),
+      allModels.map(
+        (m: {
+          name: any;
+          displayName: any;
+          available: any;
+          provider: { providerName: any };
+        }) => ({
+          name: m.name,
+          displayName: m.displayName,
+          available: m.available,
+          provider: m.provider?.providerName,
+        }),
+      ),
     );
     const filteredModels = allModels.filter((m) => m.available);
     console.log(
       "[ModelSelector] filteredModels",
-      filteredModels.map((m) => ({
-        name: m.name,
-        displayName: m.displayName,
-        available: m.available,
-        provider: m.provider?.providerName,
-      })),
+      filteredModels.map(
+        (m: {
+          name: any;
+          displayName: any;
+          available: any;
+          provider: { providerName: any };
+        }) => ({
+          name: m.name,
+          displayName: m.displayName,
+          available: m.available,
+          provider: m.provider?.providerName,
+        }),
+      ),
     );
     const defaultModel = filteredModels.find((m) => m.isDefault);
 
     if (defaultModel) {
       const arr = [
         defaultModel,
-        ...filteredModels.filter((m) => m !== defaultModel),
+        ...filteredModels.filter((m: any) => m !== defaultModel),
       ];
       return arr;
     } else {
@@ -602,7 +616,9 @@ export function ChatActions(props: {
     const isUnavailableModel = !models.some((m) => m.name === currentModel);
     if (isUnavailableModel && models.length > 0) {
       // show next model to default model if exist
-      let nextModel = models.find((model) => model.isDefault) || models[0];
+      let nextModel =
+        models.find((model: { isDefault: any }) => model.isDefault) ||
+        models[0];
       chatStore.updateTargetSession(session, (session) => {
         session.mask.modelConfig.model = nextModel.name;
         session.mask.modelConfig.providerName = nextModel?.provider

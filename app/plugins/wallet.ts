@@ -1,7 +1,11 @@
 import { jwtVerify } from "jose";
 import { notifyError, notifySuccess } from "./show_window";
 import { authChallenge, authVerify } from "./auth";
+import { getServerSideConfig } from "@/app/config/server";
 
+const config = getServerSideConfig();
+console.log(`config=${JSON.stringify(config)}`);
+const JWT_SECRET = config.jwt_secret;
 // 等待钱包注入
 export async function waitForWallet() {
   return new Promise((resolve, reject) => {
@@ -188,9 +192,12 @@ export async function loginWithChallenge() {
 export async function isValidToken(token: string): Promise<boolean> {
   try {
     const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET ||
+      JWT_SECRET ||
         "e802e988a02546cc47415e4bc76346aae7ceece97a0f950319c861a5de38b20d",
     );
+    console.log(`process.env.JWT_SECRET ===== ${JWT_SECRET}`);
+    console.log(`secret====${secret}`);
+    console.log(`token====${token}`);
     await jwtVerify(token, secret);
     return true;
   } catch (error) {

@@ -1,7 +1,15 @@
 import { verifyMessage } from "ethers";
 import { SignJWT } from "jose";
+import { getServerSideConfig } from "@/app/config/server";
+
+const config = getServerSideConfig();
+const JWT_SECRET_PARAM = config.jwt_secret;
 // 生产环境使用环境变量
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+console.log(`process.env.NEXT_PUBLIC_JWT_SECRET ===== ${JWT_SECRET_PARAM}`);
+const JWT_SECRET = new TextEncoder().encode(
+  JWT_SECRET_PARAM ||
+    "e802e988a02546cc47415e4bc76346aae7ceece97a0f950319c861a5de38b20d",
+);
 // 生产环境使用 Redis
 const challenges = new Map();
 
