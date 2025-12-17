@@ -1,4 +1,4 @@
-import { BUILTIN_MASKS } from "../masks";
+import { BUILTIN_MASKS, BuiltinMask } from "../masks";
 import { getLang, Lang } from "../locales";
 import { DEFAULT_TOPIC, ChatMessage } from "./chat";
 import { ModelConfig, useAppConfig } from "./config";
@@ -96,9 +96,21 @@ export const useMaskStore = createPersistStore(
       // const DEFAULT_LANG = "en"; 默认语言是英文，可以在设置里修改语言
       const lang = getLang();
       // lang=cn
-      console.log(`lang=${lang}`);
       const currentMasks = BUILTIN_MASKS.filter((item) => item.lang === lang);
-      const buildinMasks = currentMasks.map(
+
+      // 去除重复
+      const uniqueCurrentMasks = currentMasks.reduce<BuiltinMask[]>(
+        (mask, current) => {
+          const exists = mask.some((m) => m.name === current.name);
+          if (!exists) {
+            mask.push(current);
+          }
+          return mask;
+        },
+        [],
+      );
+
+      const buildinMasks = uniqueCurrentMasks.map(
         (m) =>
           ({
             ...m,
