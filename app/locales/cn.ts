@@ -863,6 +863,43 @@ const cn = {
     GenerateParams: "生成参数",
     Detail: "详情",
   },
+  MyCenter: {
+    Title: "个人中心",
+    SubTitle: "管理您的账户与资源",
+    Tab1: {
+      Title: "存储使用情况",
+      Info: {
+        Total: "总磁盘配额",
+        Used: "已使用",
+        Remain: "剩余空间",
+      },
+    },
+    Tab2: {
+      Title: "个人信息",
+      Info: {
+        Telephone: "手机号",
+        Email: "邮箱",
+      },
+    },
+    Tab3: {
+      Title: "大模型调用情况",
+      Info: {
+        Moneys: "总消费金额",
+        Tokens: "tokens消耗",
+      },
+    },
+    Tab4: {
+      Title: "账户服务",
+      Info: {
+        StorageExpansion: "存储扩容",
+        Desc1: "提升您的磁盘配额上限",
+        ImmediatelyExpandCapacity: "立即扩容",
+        Desc2: "为您的账户充值以继续使用服务",
+        TopUpBalance: "充值余额",
+        GotoRecharge: "去充值",
+      },
+    },
+  },
 };
 
 type DeepPartial<T> = T extends object

@@ -1,149 +1,152 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { IconButton } from "./button";
+import { List, ListItem } from "./ui-lib";
+import CloseIcon from "../icons/close.svg";
+import styles from "./my-center.module.scss";
+import { useNavigate } from "react-router-dom";
+import { Path } from "../constant";
+import Locale from "../locales";
+
+// 假设这些数据来自 API 或 Store（此处 mock）
+const mockStorage = {
+  total: "10 GB",
+  used: "3.2 GB",
+  remaining: "6.8 GB",
+};
+
+const mockProfile = {
+  phone: "+86 138****5678",
+  email: "user@example.com",
+};
+
+const mockUsage = {
+  totalCost: "¥128.50",
+  totalTokens: "2,450,000",
+};
 
 export function Centers() {
-  // 模拟用户数据（实际中应从后端或状态管理中获取）
-  const [userData, setUserData] = useState({
-    phone: "138****1234",
-    email: "user@example.com",
-    walletName: "My Wallet",
-    walletAddress: "0x1234...abcd",
-  });
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<
+    "storage" | "info" | "usage" | "service"
+  >("storage");
 
-  const [storageUsage, setStorageUsage] = useState({
-    used: 12.5, // GB
-    total: 50, // GB
-  });
-
-  const [apiUsage, setApiUsage] = useState({
-    totalCost: 23.5, // 元
-    totalTokens: 125000,
-    thisMonthCost: 8.2,
-    thisMonthTokens: 42000,
-  });
-
-  // 可选：组件挂载时加载真实数据
-  useEffect(() => {
-    // 模拟 API 调用
-    // fetchUserData().then(data => setUserData(data));
-    // fetchUsageData().then(data => { setStorageUsage(...); setApiUsage(...); });
-  }, []);
-
-  // 计算存储使用百分比
-  const storagePercent = (
-    (storageUsage.used / storageUsage.total) *
-    100
-  ).toFixed(1);
+  const tabs = [
+    { key: "storage", label: Locale.MyCenter.Tab1.Title },
+    { key: "info", label: Locale.MyCenter.Tab2.Title },
+    { key: "usage", label: Locale.MyCenter.Tab3.Title },
+    { key: "service", label: Locale.MyCenter.Tab4.Title },
+  ];
 
   return (
-    <div
-      style={{
-        padding: "1.25rem", // 20px → 1.25rem（更响应式）
-        maxWidth: "min(800px, 95vw)", // 关键：限制最大宽度，但小屏时用 95% 视口宽
-        margin: "0 auto",
-        fontFamily: "Arial, sans-serif",
-        boxSizing: "border-box", // 确保 padding 不影响总宽
-      }}
-    >
-      <h1 style={{ textAlign: "center", marginBottom: "1.875rem" }}>
-        个人中心
-      </h1>
-
-      {/* 1. 存储使用情况 */}
-      <div style={sectionStyle}>
-        <h2>存储使用情况</h2>
-        <p>
-          已使用：{storageUsage.used} GB / {storageUsage.total} GB
-        </p>
-        <div style={progressBarContainer}>
-          <div style={{ ...progressBar, width: `${storagePercent}%` }}></div>
+    <div>
+      <div className="window-header" data-tauri-drag-region>
+        <div className="window-header-title">
+          <div className="window-header-main-title">个人中心</div>
+          <div className="window-header-sub-title">管理您的账户与资源</div>
         </div>
-        <p>使用率：{storagePercent}%</p>
-      </div>
-
-      {/* 2. 大模型 API 使用明细 */}
-      <div style={sectionStyle}>
-        <h2>大模型 API 使用情况</h2>
-        <ul style={listStyle}>
-          <li>本月消费：¥{apiUsage.thisMonthCost}</li>
-          <li>本月 Tokens：{apiUsage.thisMonthTokens.toLocaleString()}</li>
-          <li>累计消费：¥{apiUsage.totalCost}</li>
-          <li>累计 Tokens：{apiUsage.totalTokens.toLocaleString()}</li>
-        </ul>
-      </div>
-
-      {/* 3. 扩容与充值入口 */}
-      <div style={sectionStyle}>
-        <h2>账户服务</h2>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap", // 允许按钮在窄屏换行
-            gap: "1rem", // 使用 rem 更响应
-            marginTop: "0.625rem",
-          }}
-        >
-          <button style={buttonStyle}>扩容存储</button>
-          <button style={buttonStyle}>充值余额</button>
+        <div className="window-actions">
+          <div className="window-action-button"></div>
+          <div className="window-action-button"></div>
+          <div className="window-action-button">
+            <IconButton
+              aria={Locale.UI.Close}
+              icon={<CloseIcon />}
+              onClick={() => navigate(Path.Home)}
+              bordered
+            />
+          </div>
         </div>
       </div>
 
-      {/* 4. 手机号与邮箱 */}
-      <div style={sectionStyle}>
-        <h2>联系方式</h2>
-        <p>手机号：{userData.phone}</p>
-        <p>邮箱：{userData.email}</p>
-      </div>
+      <div className={styles["profile"]}>
+        {/* Tab 导航 */}
+        <div className={styles["tabs"]}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              className={`${styles["tab"]} ${
+                activeTab === tab.key ? styles["active"] : ""
+              }`}
+              onClick={() => setActiveTab(tab.key as any)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-      {/* 5. 钱包信息 */}
-      <div style={sectionStyle}>
-        <h2>钱包信息</h2>
-        <p>钱包名称：{userData.walletName}</p>
-        <p style={{ wordBreak: "break-all" }}>
-          钱包地址：{userData.walletAddress}
-        </p>
+        {/* Tab 内容 */}
+        <div className={styles["tab-content"]}>
+          {activeTab === "storage" && (
+            <List>
+              <ListItem
+                title={Locale.MyCenter.Tab1.Info.Total}
+                subTitle={mockStorage.total}
+              />
+              <ListItem
+                title={Locale.MyCenter.Tab1.Info.Used}
+                subTitle={mockStorage.used}
+              />
+              <ListItem
+                title={Locale.MyCenter.Tab1.Info.Remain}
+                subTitle={mockStorage.remaining}
+              />
+            </List>
+          )}
+
+          {activeTab === "info" && (
+            <List>
+              <ListItem
+                title={Locale.MyCenter.Tab2.Info.Telephone}
+                subTitle={mockProfile.phone}
+              />
+              <ListItem
+                title={Locale.MyCenter.Tab2.Info.Email}
+                subTitle={mockProfile.email}
+              />
+            </List>
+          )}
+
+          {activeTab === "usage" && (
+            <List>
+              <ListItem
+                title={Locale.MyCenter.Tab3.Info.Moneys}
+                subTitle={mockUsage.totalCost}
+              />
+              <ListItem
+                title={Locale.MyCenter.Tab3.Info.Tokens}
+                subTitle={mockUsage.totalTokens}
+              />
+            </List>
+          )}
+
+          {activeTab === "service" && (
+            <List>
+              <ListItem
+                title={Locale.MyCenter.Tab4.Info.StorageExpansion}
+                subTitle={Locale.MyCenter.Tab4.Info.Desc1}
+              >
+                <IconButton
+                  text={Locale.MyCenter.Tab4.Info.ImmediatelyExpandCapacity}
+                  type="primary"
+                  onClick={() => console.log(`go to new page`)}
+                />
+              </ListItem>
+              <ListItem
+                title={Locale.MyCenter.Tab4.Info.TopUpBalance}
+                subTitle={Locale.MyCenter.Tab4.Info.Desc2}
+              >
+                <IconButton
+                  text={Locale.MyCenter.Tab4.Info.GotoRecharge}
+                  type="primary"
+                  onClick={() => {
+                    window.location.href = "#";
+                  }}
+                />
+              </ListItem>
+            </List>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
-const sectionStyle = {
-  marginBottom: "1.5rem",
-  padding: "1rem",
-  border: "1px solid #ddd",
-  borderRadius: "0.5rem",
-  backgroundColor: "#fafafa",
-  boxSizing: "border-box",
-};
-
-const listStyle = {
-  listStyleType: "none",
-  paddingLeft: 0,
-  margin: 0,
-};
-
-const progressBarContainer = {
-  height: "0.75rem", // 12px → 0.75rem
-  backgroundColor: "#e0e0e0",
-  borderRadius: "0.375rem",
-  overflow: "hidden",
-  marginTop: "0.5rem",
-  marginBottom: "0.5rem",
-};
-
-const progressBar = {
-  height: "100%",
-  backgroundColor: "#4caf50",
-  transition: "width 0.3s ease",
-  minWidth: "2px", // 防止极低使用率时看不见
-};
-
-const buttonStyle = {
-  padding: "0.5rem 1rem", // 8px 16px → 相对单位
-  backgroundColor: "#1976d2",
-  color: "white",
-  border: "none",
-  borderRadius: "0.25rem",
-  cursor: "pointer",
-  fontSize: "1rem",
-  whiteSpace: "nowrap", // 防止按钮文字换行
-};
