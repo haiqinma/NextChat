@@ -7,7 +7,7 @@ export const getBuildConfig = () => {
       "[Server Config] you are importing a nodejs-only module outside of nodejs",
     );
   }
-
+  const adminWalletAccount = process.env.ADMIN_WALLET_ACCOUNT;
   const buildMode = process.env.BUILD_MODE ?? "standalone";
   const isApp = !!process.env.BUILD_APP;
   const version = "v" + tauriConfig.package.version;
@@ -40,6 +40,7 @@ export const getBuildConfig = () => {
     buildMode,
     isApp,
     template: process.env.DEFAULT_INPUT_TEMPLATE ?? DEFAULT_INPUT_TEMPLATE,
+    adminWalletAccount,
   };
 };
 
