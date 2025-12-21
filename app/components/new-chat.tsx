@@ -32,6 +32,14 @@ function MaskItem(props: { mask: Mask; onClick?: () => void }) {
   );
 }
 
+function chunkArray<T>(array: T[], size: number = 10): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
 function useMaskGroup(masks: Mask[]) {
   const [groups, setGroups] = useState<Mask[][]>([]);
 
@@ -79,6 +87,7 @@ export function NewChat() {
   const maskStore = useMaskStore();
 
   const masks = maskStore.getAll();
+  const splitMasks = chunkArray(masks);
   const groups = useMaskGroup(masks);
 
   const navigate = useNavigate();
@@ -169,7 +178,7 @@ export function NewChat() {
       </div>
 
       <div className={styles["masks"]} ref={maskRef}>
-        {groups.map((masks, i) => (
+        {splitMasks.map((masks, i) => (
           <div key={i} className={styles["mask-row"]}>
             {masks.map((mask, index) => (
               <MaskItem

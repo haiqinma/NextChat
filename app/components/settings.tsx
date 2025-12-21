@@ -570,11 +570,18 @@ function SyncItems() {
 }
 
 export function Settings() {
+  const clientConfig = useMemo(() => getClientConfig(), []);
   const navigate = useNavigate();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isAdmin, setAdmin] = useState(false);
   const config = useAppConfig();
   const updateConfig = config.update;
+  const adminAccount = clientConfig?.adminWalletAccount;
+  const storageAccount = localStorage.getItem("currentAccount");
 
+  console.log(`adminAccount = ${adminAccount}`);
+  console.log(`storageAccount = ${storageAccount}`);
+  console.log(`isAdmin = ${isAdmin}`);
   const updateStore = useUpdateStore();
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const currentVersion = updateStore.formatVersion(updateStore.version);
@@ -638,6 +645,7 @@ export function Settings() {
 
   const showUsage = accessStore.isAuthorized();
   useEffect(() => {
+    setAdmin(adminAccount === storageAccount);
     // checks per minutes
     checkUpdate();
     showUsage && checkUsage();
@@ -670,7 +678,6 @@ export function Settings() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const clientConfig = useMemo(() => getClientConfig(), []);
   const showAccessCode = enabledAccessControl && !clientConfig?.isApp;
 
   const accessCodeComponent = showAccessCode && (
@@ -806,39 +813,42 @@ export function Settings() {
               </div>
             </Popover>
           </ListItem>
-
-          <ListItem
-            title={Locale.Settings.Update.Version(currentVersion ?? "unknown")}
-            subTitle={
-              checkingUpdate
-                ? Locale.Settings.Update.IsChecking
-                : hasNewVersion
-                ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
-                : Locale.Settings.Update.IsLatest
-            }
-          >
-            {checkingUpdate ? (
-              <LoadingIcon />
-            ) : hasNewVersion ? (
-              clientConfig?.isApp ? (
+          {isAdmin && (
+            <ListItem
+              title={Locale.Settings.Update.Version(
+                currentVersion ?? "unknown",
+              )}
+              subTitle={
+                checkingUpdate
+                  ? Locale.Settings.Update.IsChecking
+                  : hasNewVersion
+                  ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
+                  : Locale.Settings.Update.IsLatest
+              }
+            >
+              {checkingUpdate ? (
+                <LoadingIcon />
+              ) : hasNewVersion ? (
+                clientConfig?.isApp ? (
+                  <IconButton
+                    icon={<ResetIcon></ResetIcon>}
+                    text={Locale.Settings.Update.GoToUpdate}
+                    onClick={() => clientUpdate()}
+                  />
+                ) : (
+                  <Link href={updateUrl} target="_blank" className="link">
+                    {Locale.Settings.Update.GoToUpdate}
+                  </Link>
+                )
+              ) : (
                 <IconButton
                   icon={<ResetIcon></ResetIcon>}
-                  text={Locale.Settings.Update.GoToUpdate}
-                  onClick={() => clientUpdate()}
+                  text={Locale.Settings.Update.CheckUpdate}
+                  onClick={() => checkUpdate(true)}
                 />
-              ) : (
-                <Link href={updateUrl} target="_blank" className="link">
-                  {Locale.Settings.Update.GoToUpdate}
-                </Link>
-              )
-            ) : (
-              <IconButton
-                icon={<ResetIcon></ResetIcon>}
-                text={Locale.Settings.Update.CheckUpdate}
-                onClick={() => checkUpdate(true)}
-              />
-            )}
-          </ListItem>
+              )}
+            </ListItem>
+          )}
 
           <ListItem title={Locale.Settings.SendKey}>
             <Select
@@ -912,23 +922,24 @@ export function Settings() {
               }
             ></InputRange>
           </ListItem>
-
-          <ListItem
-            title={Locale.Settings.FontFamily.Title}
-            subTitle={Locale.Settings.FontFamily.SubTitle}
-          >
-            <input
-              aria-label={Locale.Settings.FontFamily.Title}
-              type="text"
-              value={config.fontFamily}
-              placeholder={Locale.Settings.FontFamily.Placeholder}
-              onChange={(e) =>
-                updateConfig(
-                  (config) => (config.fontFamily = e.currentTarget.value),
-                )
-              }
-            ></input>
-          </ListItem>
+          {isAdmin && (
+            <ListItem
+              title={Locale.Settings.FontFamily.Title}
+              subTitle={Locale.Settings.FontFamily.SubTitle}
+            >
+              <input
+                aria-label={Locale.Settings.FontFamily.Title}
+                type="text"
+                value={config.fontFamily}
+                placeholder={Locale.Settings.FontFamily.Placeholder}
+                onChange={(e) =>
+                  updateConfig(
+                    (config) => (config.fontFamily = e.currentTarget.value),
+                  )
+                }
+              ></input>
+            </ListItem>
+          )}
 
           <ListItem
             title={Locale.Settings.AutoGenerateTitle.Title}
@@ -1175,18 +1186,20 @@ export function Settings() {
             }}
           />
         </List>
-        <List>
-          <TTSConfigList
-            ttsConfig={config.ttsConfig}
-            updateConfig={(updater) => {
-              const ttsConfig = { ...config.ttsConfig };
-              updater(ttsConfig);
-              config.update((config) => (config.ttsConfig = ttsConfig));
-            }}
-          />
-        </List>
+        {isAdmin && (
+          <List>
+            <TTSConfigList
+              ttsConfig={config.ttsConfig}
+              updateConfig={(updater) => {
+                const ttsConfig = { ...config.ttsConfig };
+                updater(ttsConfig);
+                config.update((config) => (config.ttsConfig = ttsConfig));
+              }}
+            />
+          </List>
+        )}
 
-        <DangerItems />
+        {isAdmin && <DangerItems />}
       </div>
     </ErrorBoundary>
   );
