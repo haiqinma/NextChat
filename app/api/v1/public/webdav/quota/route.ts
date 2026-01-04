@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSideConfig } from "@/app/config/server";
 
 const config = getServerSideConfig();
-const YEYING_BACKEND_URL = config.backend_url;
+const WEBDAV_BACKEND_URL = config.WEBDAV_BACKEND_URL;
 
-if (!YEYING_BACKEND_URL) {
+if (!WEBDAV_BACKEND_URL) {
   throw new Error("YEYING_BACKEND_URL is not set in environment variables");
 }
 
@@ -18,7 +18,7 @@ async function handle(
   const urlPath = requestUrl.pathname;
 
   // 构造目标 URL
-  const targetUrl = `${YEYING_BACKEND_URL}${urlPath}`;
+  const targetUrl = `${WEBDAV_BACKEND_URL}${urlPath}`;
 
   // 转发请求头（保留 Content-Type、Authorization 等）
   const headers: HeadersInit = {};

@@ -21,6 +21,7 @@ import BotIconGrok from "../icons/llm-icons/grok.svg";
 import BotIconHunyuan from "../icons/llm-icons/hunyuan.svg";
 import BotIconDoubao from "../icons/llm-icons/doubao.svg";
 import BotIconChatglm from "../icons/llm-icons/chatglm.svg";
+import React, { useState } from "react";
 
 export function getEmojiUrl(unified: string, style: EmojiStyle) {
   // Whoever owns this Content Delivery Network (CDN), I am using your CDN to serve emojis
@@ -120,14 +121,50 @@ export function EmojiAvatar(props: { avatar: string; size?: number }) {
 }
 
 export function WalletAccount(props: { address?: string; title?: string }) {
+  const [isCopied, setIsCopied] = useState(false);
+  const formatAddress = (addr: string) => {
+    if (!addr) return "";
+    if (addr.length <= 12 + 4 + 3) return addr;
+    const prefix = addr.slice(0, 12);
+    const suffix = addr.slice(-12);
+    return `${prefix}...${suffix}`;
+  };
+  const copyToClipboard = async () => {
+    if (!props.address) return;
+    try {
+      await navigator.clipboard.writeText(props.address);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error("复制失败:", err);
+      setIsCopied(false);
+    }
+  };
+
   return (
     <div
       style={{
         overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        fontFamily: "monospace",
       }}
-      title={props.title}
+      title={props.title || props.address}
     >
-      {props.address}
+      {formatAddress(props.address || "")}
+      <button
+        onClick={copyToClipboard}
+        style={{
+          padding: "8px 12px",
+          background: "#1a1b1c",
+          border: "1px solid #333",
+          borderRadius: "8px",
+          color: "#666",
+          cursor: "pointer",
+        }}
+      >
+        {isCopied ? "已复制" : "复制"}
+      </button>
     </div>
   );
 }

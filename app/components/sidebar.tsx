@@ -5,7 +5,6 @@ import styles from "./home.module.scss";
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
 import CenterIcon from "../icons/my-center.svg";
-import ChatGptIcon from "../icons/yeying.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
@@ -264,12 +263,7 @@ export function SideBar(props: { className?: string }) {
       shouldNarrow={shouldNarrow}
       {...props}
     >
-      <SideBarHeader
-        title="AIChat"
-        subTitle=""
-        logo={<ChatGptIcon />}
-        shouldNarrow={shouldNarrow}
-      >
+      <SideBarHeader shouldNarrow={shouldNarrow}>
         {!show && (
           <div className={styles["sidebar-header-bar"]}>
             <IconButton

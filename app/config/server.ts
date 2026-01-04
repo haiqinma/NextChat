@@ -276,6 +276,6 @@ export const getServerSideConfig = () => {
     visionModels,
     allowedWebDavEndpoints,
     enableMcp: process.env.ENABLE_MCP === "true",
-    backend_url: process.env.YEYING_BACKEND_URL,
+    web_dav_backend_url: process.env.WEBDAV_BACKEND_URL,
   };
 };
