@@ -21,19 +21,20 @@
 
     cp .env.template .env.local && npm install && npm run dev
 
-
 ## 测试机器启动
 
 ### 先启动 nextjs
 
     cd /home/ubuntu/code/NextChat/NextChat
     git pull
+    cp .env.template .env.local
     npm install && npm run build
     PORT=3000 nohup npm start > nextjs.log 2>&1 &
 
 ### 然后启动 nginx
 
-    cd /home/ubuntu/code/NextChat && bash startService.sh
+    cd /home/ubuntu/code/NextChat/NextChat && bash script/start-nginx.sh
+
 
 # 开发环境搭建
 # 运行项目
