@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSideConfig } from "@/app/config/server";
 
 const config = getServerSideConfig();
-const YEYING_BACKEND_URL = config.backend_url;
+const YEYING_BACKEND_URL = config.web_dav_backend_url;
 
 if (!YEYING_BACKEND_URL) {
   throw new Error("YEYING_BACKEND_URL is not set in environment variables");

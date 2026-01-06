@@ -124,9 +124,9 @@ export function WalletAccount(props: { address?: string; title?: string }) {
   const [isCopied, setIsCopied] = useState(false);
   const formatAddress = (addr: string) => {
     if (!addr) return "";
-    if (addr.length <= 12 + 4 + 3) return addr;
-    const prefix = addr.slice(0, 12);
-    const suffix = addr.slice(-12);
+    if (addr.length <= 6 + 4 + 3) return addr;
+    const prefix = addr.slice(0, 6);
+    const suffix = addr.slice(-6);
     return `${prefix}...${suffix}`;
   };
   const copyToClipboard = async () => {
